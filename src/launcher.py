@@ -51,7 +51,7 @@ def call_printversion_program(*argcs,**kwargs):
 
 
 run_programs = {
-    'mdd_build_schema': call_build_schema_program,
+    'mdd_to_schema': call_build_schema_program,
     'test': call_test_program,
     'version': call_printversion_program,
 }
