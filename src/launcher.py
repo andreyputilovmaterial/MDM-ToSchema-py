@@ -11,12 +11,15 @@ import traceback, sys
 if __name__ == '__main__':
     # run as a program
     from GENERATED._VERSION import _VERSION as diff_script_version
+    import build_schema
 elif '.' in __name__:
     # package
     from .GENERATED._VERSION import _VERSION as diff_script_version
+    from . import build_schema
 else:
     # included with no parent package
     from GENERATED._VERSION import _VERSION as diff_script_version
+    import build_schema
 
 
 
@@ -27,6 +30,9 @@ STDOUT_COLOR_RESET = "\033[0m"
 STDOUT_COLOR_GREEN = "\033[32m"
 
 
+
+def call_build_schema_program(*argcs,**kwargs):
+    return build_schema.entry_point(*argcs,**kwargs)
 
 def call_test_program(*argcs,**kwargs):
     msg = '''
@@ -45,6 +51,7 @@ def call_printversion_program(*argcs,**kwargs):
 
 
 run_programs = {
+    'mdd_build_schema': call_build_schema_program,
     'test': call_test_program,
     'version': call_printversion_program,
 }
