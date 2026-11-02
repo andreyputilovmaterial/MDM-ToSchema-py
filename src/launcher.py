@@ -2,24 +2,16 @@
 import argparse
 # from pathlib import Path
 import traceback, sys
+import importlib
 
 
 
 
 
 
-if __name__ == '__main__':
-    # run as a program
-    from GENERATED._VERSION import _VERSION as diff_script_version
-    import build_schema
-elif '.' in __name__:
-    # package
-    from .GENERATED._VERSION import _VERSION as diff_script_version
-    from . import build_schema
-else:
-    # included with no parent package
-    from GENERATED._VERSION import _VERSION as diff_script_version
-    import build_schema
+# Entry-point modules (the schema builder and the generated version string) are
+# imported lazily inside their ``call_*`` handlers via :func:`_import_module`, so
+# ``--program done`` works as a dependency-free smoke test in a fresh checkout.
 
 
 
@@ -31,8 +23,31 @@ STDOUT_COLOR_GREEN = "\033[32m"
 
 
 
+def _import_module(flat_name):
+    # Lazily import an entry-point module; mirrors the three-way conditional
+    # import used by entry-point scripts.
+    if __name__ == '__main__':
+        return importlib.import_module(flat_name)
+    elif '.' in __name__:
+        return importlib.import_module('.' + flat_name, package=__package__)
+    else:
+        return importlib.import_module(flat_name)
+
+
+def _import_version():
+    # The generated version string only exists after a build step has written
+    # ``GENERATED/_VERSION.py``. Fall back to a placeholder so ``--program version``
+    # still works (and ``--program done`` never needs it) in a fresh checkout.
+    try:
+        version_module = _import_module('GENERATED._VERSION')
+    except ImportError:
+        return 'unknown'
+    return version_module._VERSION
+
+
 def call_build_schema_program(*argcs,**kwargs):
-    return build_schema.entry_point(*argcs,**kwargs)
+    read_mdd = _import_module('read_mdd')
+    return read_mdd.entry_point(*argcs,**kwargs)
 
 def call_test_program(*argcs,**kwargs):
     msg = '''
@@ -41,9 +56,12 @@ hello, world! From diff
     print(msg)
     return True
 
+def call_done_program(*argcs,**kwargs):
+    print(f'{STDOUT_COLOR_GREEN}done{STDOUT_COLOR_RESET}')
+    return True
+
 def call_printversion_program(*argcs,**kwargs):
-    msg = diff_script_version
-    msg = msg.strip()
+    msg = _import_version().strip()
     print(msg)
     return True
 
@@ -53,6 +71,7 @@ def call_printversion_program(*argcs,**kwargs):
 run_programs = {
     'mdd_to_schema': call_build_schema_program,
     'test': call_test_program,
+    'done': call_done_program,
     'version': call_printversion_program,
 }
 
