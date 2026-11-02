@@ -1,2 +1,10 @@
 # Runtime dependencies (pip-installable packages), one per line.
 # Install with:  pip install -r requirements.txt
+#
+# pydantic builds the JSON schema from the MDD object model.
+# pywin32 (win32com.client) is needed on Windows to open the MDD; the import is
+# lazy, so this module can be imported anywhere and only fails when an MDD is
+# actually opened.
+
+pydantic
+pywin32
