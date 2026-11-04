@@ -9,18 +9,13 @@ import traceback, sys
 
 
 
-if __name__ == '__main__':
-    # run as a program
-    from GENERATED._VERSION import _VERSION as script_version
-    from make_pydantic import process_field
-    from load_mdd import MDMDocument
-elif '.' in __name__:
-    # package
+if __package__:
+    # package context
     from .GENERATED._VERSION import _VERSION as script_version
     from .make_pydantic import process_field
     from .load_mdd import MDMDocument
 else:
-    # included with no parent package
+    # flat context: no parent package
     from GENERATED._VERSION import _VERSION as script_version
     from make_pydantic import process_field
     from load_mdd import MDMDocument

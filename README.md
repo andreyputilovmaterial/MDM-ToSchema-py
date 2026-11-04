@@ -16,26 +16,26 @@ the COM API of IBM/Unicom Professional (Windows + Professional required, like
 As everywhere in this toolchain, the program can be started three equivalent ways:
 
 1. **Single-file bundle** (distribution). `build.bat`/`build.sh` would produce
-   `dist/mdmtoolsap_bundle.py` and append `from src import launcher; launcher.main()`
-   (pinliner bundling is currently disabled in `build.bat`, so this is not produced
-   yet). Prepare the environment with `run_init`, then run the bundle with the venv
-   Python:
+   `dist/mdmtoolsap_bundle.py` with pinliner's `--main src.launcher --main-attr main`
+   entry point (pinliner bundling is currently disabled in `build.bat`, so this is not
+   produced yet). Prepare the environment with `run_init`, then run the bundle with the
+   venv Python:
 
    ```
    run_init.sh
    ./.venv/bin/python dist/mdmtoolsap_bundle.py --program mdd_to_schema --inp file.mdd
    ```
 
-2. **Direct module** (development). Run the entry-point module directly:
+2. **Direct module** (development). Run the entry-point module directly with `-m`:
 
    ```
-   python src/read_mdd.py --inp file.mdd
+   python -m src.read_mdd --inp file.mdd
    ```
 
-3. **Launcher proxy** (development). Run the universal dispatcher directly:
+3. **Launcher proxy** (development). Run the universal dispatcher with `-m`:
 
    ```
-   python src/launcher.py --program mdd_to_schema --inp file.mdd
+   python -m src.launcher --program mdd_to_schema --inp file.mdd
    ```
 
    > Note: `src/launcher.py` currently references a `build_schema` module that is not
